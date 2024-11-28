@@ -3,16 +3,20 @@ from playwright.sync_api import Playwright, sync_playwright, expect
 
 
 def run(playwright: Playwright) -> None:
-    browser = playwright.chromium.launch(headless=False, slow_mo=1000)
+    browser = playwright.chromium.launch(headless=False)
     context = browser.new_context(
-        record_video_dir="videos/",
-        record_video_size={"width": 640, "height": 480}
+        #record_video_dir="videos/",
+        #record_video_size={"width": 640, "height": 480}
         )
     page = context.new_page()
 
     # A BUG IS BEING REPLICATED IN THIS TEST CASE
     page.goto("https://www.saucedemo.com/")
     #page.screenshot(path="./bug_reset_app_state/01_open_page.png")
+
+    # SETTING UP TRACING
+    context.tracing.start(screenshots=True, snapshots = True, sources=True)
+
     # LOG IN TO APPLICATION
     page.locator("[data-test=\"username\"]").click()
     page.locator("[data-test=\"username\"]").fill("standard_user")
@@ -64,6 +68,9 @@ def run(playwright: Playwright) -> None:
     page.locator("[data-test=\"remove-sauce-labs-fleece-jacket\"]").click()
 
     # ---------------------
+
+    # STOP TRACING AND STORE TRACE
+    context.tracing.stop(path="reset_app_state_trace.zip")
     context.close()
     browser.close()
 
