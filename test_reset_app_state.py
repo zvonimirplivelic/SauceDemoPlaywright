@@ -1,12 +1,9 @@
-import re
-from playwright.sync_api import Playwright, sync_playwright, expect
+from playwright.sync_api import expect
 
-
-def run(playwright: Playwright) -> None:
-    browser = playwright.chromium.launch(headless=False)
+def test_reset_app_state(browser) -> None:
     context = browser.new_context(
-        #record_video_dir="videos/",
-        #record_video_size={"width": 640, "height": 480}
+        record_video_dir="videos/",
+        record_video_size={"width": 640, "height": 480}
         )
     page = context.new_page()
 
@@ -73,7 +70,3 @@ def run(playwright: Playwright) -> None:
     context.tracing.stop(path="reset_app_state_trace.zip")
     context.close()
     browser.close()
-
-
-with sync_playwright() as playwright:
-    run(playwright)
